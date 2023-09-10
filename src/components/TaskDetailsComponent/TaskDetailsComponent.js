@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Accordion from "@mui/material/Accordion";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -68,6 +68,10 @@ export default function TaskDetailsComponent() {
     },
   ]);
 
+  useEffect(() => {
+    setSubTasks(subTasks);
+  }, [subTasks]);
+
   const eta = [
     { value: 1, hours: 1 },
     { value: 2, hours: 2 },
@@ -84,11 +88,7 @@ export default function TaskDetailsComponent() {
 
   const createSubTask = () => setOpen(true);
   const handleClose = () => {
-    setViewWorkFlow("");
-    setSummary("");
-    setEtaTime(0);
-    setDescription("");
-    setOpen(false);
+    resetValues();
   };
   const handleChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
@@ -133,6 +133,10 @@ export default function TaskDetailsComponent() {
     }
     subTasks.push(newObj);
     console.log(subTasks, "######");
+    resetValues();
+  };
+
+  const resetValues = () => {
     setViewWorkFlow("");
     setSummary("");
     setEtaTime(0);
@@ -148,17 +152,9 @@ export default function TaskDetailsComponent() {
         element.summary = summary;
         element.eta = etaTime;
         element.description = description;
-        /* setViewWorkFlow(viewWorkFlow);
-        setSummary(summary);
-        setEtaTime(eta);
-        setDescription(description); */
       }
     });
-    setViewWorkFlow("");
-    setSummary("");
-    setEtaTime(0);
-    setDescription("");
-    setOpen(false);
+    resetValues();
     setIsUpdate(false);
   };
 
@@ -174,6 +170,13 @@ export default function TaskDetailsComponent() {
     });
     setIsUpdate(true);
     setOpen(true);
+  };
+
+  const handleDelete = (e) => {
+    let finalTaskList = subTasks.filter((x) => {
+      return x.id !== e.id;
+    });
+    setSubTasks([...finalTaskList]);
   };
 
   return (
@@ -222,7 +225,7 @@ export default function TaskDetailsComponent() {
               </Button>
               <Button
                 variant="contained"
-                type="submit"
+                onClick={() => handleDelete(item)}
                 style={{
                   marginBottom: "1rem",
                   marginLeft: 10,
